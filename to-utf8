@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# get abs path
+path=`pwd`'/'
+FLG_X="FALSE"
+
+# read option
+while getopts xh OPT
+do
+    case $OPT in
+        "x" ) FLG_X="TRUE" ;;
+        "h" ) echo "to-utf8 [-x : change to executable] FILENAMES" 1>&2
+              exit 1 ;;
+          * ) echo "Usage to-utf8 [-x] FILENAMES" 1>&2
+              exit 1 ;;
+    esac
+done
+
+# delete option params
+shift `expr $OPTIND - 1`
+
+# convert file
+for filename in "$@"
+do
+    if [ ! -e ${path}${filename} ]; then
+        echo "not found: ${path}${filename}"
+        break
+    fi
+
+    {
+        nkf -w80 ${path}${filename} > ${path}'new_'${filename}
+        rm ${path}${filename}
+        mv ${path}'new_'${filename} ${path}${filename}
+        echo ${path}${filename}
+    }
+
+    if [ ${FLG_X} = "TRUE" ]; then
+        echo 'changed to executable'
+        chmod +x ${path}${filename}
+    fi
+done
