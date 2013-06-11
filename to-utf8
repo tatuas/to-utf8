@@ -27,8 +27,15 @@ do
         break
     fi
 
+    if [ -d ${path}${filename} ]; then
+        echo "Is directory: ${path}${filename}"
+        break
+    fi
+
     {
+        permission=`stat --format='%a' ${path}${filename}`
         nkf -w80 ${path}${filename} > ${path}'new_'${filename}
+        chmod ${permission} ${path}'new_'${filename}
         rm ${path}${filename}
         mv ${path}'new_'${filename} ${path}${filename}
         echo ${path}${filename}
